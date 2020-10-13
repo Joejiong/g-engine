@@ -1,0 +1,26 @@
+Global:
+    tool : bcloud
+
+Default:
+    profile : [release]
+
+Profiles:
+    - profile:
+      name : release
+      command : bcloud build
+      release : true
+
+    - profile:
+      name : gcc82_cxx11_ut
+      command : bcloud ut --no-output --cppflags=-fsanitize=address --cxxflags=-std=c++11 --ldflags=-fsanitize=address
+      release : false
+
+    - profile:
+      name : gcc82_cxx14_ut
+      command : bcloud ut --no-output --cppflags=-fsanitize=address --cxxflags=-std=c++14 --ldflags=-fsanitize=address
+      release : false
+
+    - profile:
+      name : gcc82_cxx17_ut
+      command : bcloud ut --no-output --cppflags=-fsanitize=address --cxxflags=-std=c++17 --ldflags=-fsanitize=address
+      release : false

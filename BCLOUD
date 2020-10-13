@@ -1,0 +1,51 @@
+# edit-mode: -*- python -*-
+# -*- coding:utf-8 -*-
+WORKROOT('')
+ISYSTEM()
+PLATFORM('centos4u3')
+GCC('gcc82')
+GLOBAL_CPPFLAGS_STR = '-D_GNU_SOURCE -DNDEBUG -D__const__= -DBABYLON_DEFINE_EXPECT=0'
+GLOBAL_CFLAGS_STR = '-g -O3 -pipe -W -Wall -Werror -fPIC -mavx -ffast-math -fno-omit-frame-pointer'
+GLOBAL_CXXFLAGS_STR = GLOBAL_CFLAGS_STR + ' -ftemplate-backtrace-limit=0'
+if GLOBAL_GCC_VERSION() == 'gcc482':
+    GLOBAL_CXXFLAGS_STR = GLOBAL_CXXFLAGS_STR + ' -std=c++11'
+else:
+    GLOBAL_CXXFLAGS_STR = GLOBAL_CXXFLAGS_STR + ' -faligned-new'
+GLOBAL_LDFLAGS_STR = '-ldl -lz -lpthread -lssl -lcrypto'
+CPPFLAGS(GLOBAL_CPPFLAGS_STR)
+CFLAGS(GLOBAL_CFLAGS_STR)
+CXXFLAGS(GLOBAL_CXXFLAGS_STR)
+LDFLAGS(GLOBAL_LDFLAGS_STR)
+
+INCPATHS('src')
+
+CONFIGS('third-64/boost@boost_1-63-0-101_PD_BL')
+CONFIGS('joewu/base/bthread@stable')
+CONFIGS('joewu/base/common@stable')
+CONFIGS('joewu/feed-mlarch/babylon@stable');
+CONFIGS('joewu/third-party/gtest@gtest_1-10-0-1_PD_BL@git_tag')
+
+HEADERS('src/joewu/graph/engine/*.h', '$INC/joewu/graph/engine')
+HEADERS('src/joewu/graph/engine/*.hpp', '$INC/joewu/graph/engine')
+HEADERS('src/joewu/graph/builtin/*.h', '$INC/joewu/graph/builtin')
+HEADERS('src/joewu/graph/builtin/*.hpp', '$INC/joewu/graph/builtin')
+
+LIB_CXXFLAGS_STR = GLOBAL_CXXFLAGS_STR + ' -std=c++11' if GLOBAL_GCC_VERSION() == 'gcc482' else GLOBAL_CXXFLAGS_STR + ' -std=c++14'
+StaticLibrary('graph_engine',
+    Sources(CxxFlags(LIB_CXXFLAGS_STR),
+        GLOB("src/joewu/graph/engine/*.cpp", "src/joewu/graph/builtin/*.cpp",
+            Exclude('src/joewu/graph/builtin/expression.cpp')))
+    + Sources(CxxFlags(LIB_CXXFLAGS_STR + ' -std=c++14'), 'src/joewu/graph/builtin/expression.cpp'))
+
+UTApplication('test_data', Sources('test/main.cpp', 'test/test_data.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_builder', Sources('test/main.cpp', 'test/test_builder.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_closure', Sources('test/main.cpp', 'test/test_closure.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_dependency', Sources('test/main.cpp', 'test/test_dependency.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_vertex', Sources('test/main.cpp', 'test/test_vertex.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_graph', Sources('test/main.cpp', 'test/test_graph.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_builtin_logical', Sources('test/main.cpp', 'test/test_builtin_logical.cpp'), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_builtin_select', Sources('test/main.cpp', 'test/test_builtin_select.cpp'), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_builtin_expression', Sources('test/main.cpp', 'test/test_builtin_expression.cpp'), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_builtin_const', Sources('test/main.cpp', 'test/test_builtin_const.cpp'), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_channel', Sources('test/main.cpp', 'test/test_channel.cpp', CxxFlags(GLOBAL_CXXFLAGS_STR + ' -fno-access-control')), Libraries('$OUT/lib/libgraph_engine.a'))
+UTApplication('test_function', Sources('test/main.cpp', 'test/test_function.cpp'), Libraries('$OUT/lib/libgraph_engine.a'))
